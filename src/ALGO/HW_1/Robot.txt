@@ -1,0 +1,21 @@
+
+5. Robot:
+
+We have an array of integers. As we gather the input get the total DVDs and check if its equal to N(N+1)/2.
+If not print IMPOSSIBLE and exit.
+
+Sweep the array from left->right first.
+As we go keep track of the total DVDs till current position. At any index 'n' check if the
+total DVDs crossed n(n+1)/2 [which is the required value to be distributed among the positions swept thus far].
+Move any extra DVDs to the right of the current position. At the end of the array, we would have done all the 
+left->right moves will ever have to make.
+
+Next start sweeping from right->left. This time, if any stack/index has more DVDs that its index, move the extras
+to the left.
+
+Also keep track of the number of moves as we make them and the moves as well, to be printed after the total moves.
+(Solution use linked list type of implementation for storing moves, which doesn't affect the complexity)
+
+Time taken is 2*N.
+
+COMPLEXITY : O( n )

@@ -1,0 +1,25 @@
+3. IndexSearch
+
+Given a sorted array of N elements, the solution does a binary search for the presence
+of and element where its value is equal to its index. 
+
+Initially start with the full range, 0 to N-1. Check if the middle element's value is greater than
+its index. If so, there is no way our element could be in the right side of the mid index. 
+PROOF:
+	Say, the value at mid index is (mid + d). Lets say element K has the value K.
+Then the values of the elements between K and mid (= K-mid+1)-[A] are to be filled with values between 
+K and (mid+d) (=  K - (mid+d) + 1)-[B]
+
+for any positive value of 'd'
+	A>B, We cannot fill A spaces with B values, without repeating some in-between. And we know that the 
+array has distinct elements. 
+
+Hence we continue our search in the left half. 
+
+The same logic holds if the array[mid]<mid. when we ll proceed with the right half of the array.
+
+Once we end up with a single element we check if it satisfies out criteria and return true or false.
+
+As we eliminate half the array at each recursion, the algorithm runs in logarithmic time.
+
+COMPLEXITY : O( log n )
