@@ -6,47 +6,50 @@ import java.util.Scanner;
  * Created by Rathinakumar on 3/31/2015.
  *
  *
+ *
  */
 public class MatrixChainParenthesize {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        int[] p = new int[n + 1];
+        for (int i = 0; i <= n; i++)
+            p[i] = sc.nextInt();
+        int[][] S = new int[n + 1][n + 1];
+        int[][] K = new int[n + 1][n + 1];
 
-    }
+        int L, R, k, D, q;
 
-    int MatrixChainOrder(int p[], int n)
-    {
+        for (L = 1; L < n; L++)
+            S[L][L] = 0;
 
-    /* For simplicity of the program, one extra row and one extra column are
-       allocated in m[][].  0th row and 0th column of m[][] are not used */
-        int[][] m = new int[n][n];
 
-        int i, j, k, L, q;
-
-    /* m[i,j] = Minimum number of scalar multiplications needed to compute
-       the matrix A[i]A[i+1]...A[j] = A[i..j] where dimention of A[i] is
-       p[i-1] x p[i] */
-
-        // cost is zero when multiplying one matrix.
-        for (i = 1; i < n; i++)
-            m[i][i] = 0;
-
-        // L is chain length.
-        for (L=2; L<n; L++)
+        // D is chain length.
+        for (D = 1; D < n; D++)
         {
-            for (i=1; i<=n-L+1; i++)
+            for (L = 1; L <= n - D; L++)
             {
-                j = i+L-1;
-                m[i][j] = Integer.MAX_VALUE;
-                for (k=i; k<=j-1; k++)
+                R = L + D;
+                S[L][R] = Integer.MAX_VALUE;
+                for (k = L; k <= R - 1; k++)
                 {
                     // q = cost/scalar multiplications
-                    q = m[i][k] + m[k+1][j] + p[i-1]*p[k]*p[j];
-                    if (q < m[i][j])
-                        m[i][j] = q;
+                    q = S[L][k] + S[k + 1][R] + p[L - 1] * p[k] * p[R];
+                    if (q < S[L][R]) {
+                        S[L][R] = q;
+                        K[L][R] = k;
+                    }
                 }
             }
         }
+        System.out.println(paranth(K, 1, n));
+        //return m[1][n-1];
+    }
 
-        return m[1][n-1];
+    public static String paranth(int[][] s, int L, int R) {
+        if (L == R) return "A" + L;
+        if (L == R - 1) return "( A" + L + " x A" + R + " )";
+        int k = s[L][R];
+        return "( " + paranth(s, L, k) + " x " + paranth(s, k + 1, R) + " )";
     }
 }
