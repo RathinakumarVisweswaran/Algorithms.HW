@@ -30,14 +30,12 @@ public class PushCart {
 
         start = grid[0][0];
         destination = grid[N - 1][M - 1];
-        start.direction = 1;
         dij();
-        int first = grid[N - 1][M - 1].distance;
-        resetGrid();
-        start.direction = 2;
+        int first = grid[N - 1][M - 1].getBestDistance();
+        /*resetGrid();
         dij();
-        int sec = grid[N - 1][M - 1].distance;
-        System.out.println((sec > first) ? first : sec);
+        int sec = grid[N - 1][M - 1].getBestDistance();*/
+        System.out.println(first);
 
     }
 
@@ -52,7 +50,10 @@ public class PushCart {
         q = new PriorityQueue<Node>();
 
         q.add(start);
-        start.distance = 0;
+        start.distance4mDOWN = 0;
+        start.distance4mUP = 0;
+        start.distance4mRIGHT = 0;
+        start.distance4mLEFT = 0;
         while (!q.isEmpty()) {
             Node n = q.poll();
             update(n);
@@ -66,8 +67,8 @@ public class PushCart {
         n = node.up();
         if (n != null && !n.explored) {
             int distanceTrhoughNode = node.cost(n, 0);
-            if (distanceTrhoughNode < n.distance) {
-                n.updateDist(distanceTrhoughNode, node, 0);
+            if (distanceTrhoughNode < n.distance4mDOWN) {
+                n.updateDist(distanceTrhoughNode, 0);
                 q.remove(n);
                 q.add(n);
             }
@@ -77,8 +78,8 @@ public class PushCart {
         n = node.down();
         if (n != null && !n.explored) {
             int distanceTrhoughNode = node.cost(n, 2);
-            if (distanceTrhoughNode < n.distance) {
-                n.updateDist(distanceTrhoughNode, node, 2);
+            if (distanceTrhoughNode < n.distance4mUP) {
+                n.updateDist(distanceTrhoughNode, 2);
                 q.remove(n);
                 q.add(n);
             }
@@ -88,8 +89,8 @@ public class PushCart {
         n = node.left();
         if (n != null && !n.explored) {
             int distanceTrhoughNode = node.cost(n, 3);
-            if (distanceTrhoughNode < n.distance) {
-                n.updateDist(distanceTrhoughNode, node, 3);
+            if (distanceTrhoughNode < n.distance4mRIGHT) {
+                n.updateDist(distanceTrhoughNode, 3);
                 q.remove(n);
                 q.add(n);
             }
@@ -99,8 +100,8 @@ public class PushCart {
         n = node.right();
         if (n != null && !n.explored) {
             int distanceTrhoughNode = node.cost(n, 1);
-            if (distanceTrhoughNode < n.distance) {
-                n.updateDist(distanceTrhoughNode, node, 1);
+            if (distanceTrhoughNode < n.distance4mLEFT) {
+                n.updateDist(distanceTrhoughNode, 1);
                 q.remove(n);
                 q.add(n);
             }
@@ -111,28 +112,42 @@ public class PushCart {
     public class Node implements Comparable<Node> {
         int x = -1, y = -1;
         int altitude;
-        int distance = Integer.MAX_VALUE;
-        int direction = 1;
-        Node parent = null;
-        boolean explored = false;
+        int distance4mUP;
+        int distance4mDOWN;
+        int distance4mRIGHT;
+        int distance4mLEFT;
+        boolean explored;
 
         public Node(int x, int y, int altitude) {
             this.x = x;
             this.y = y;
             this.altitude = altitude;
+            reset();
         }
 
         public void reset() {
-            distance = Integer.MAX_VALUE;
-            direction = 1;
-            parent = null;
+            distance4mUP = 100000;
+            distance4mDOWN = 100000;
+            distance4mRIGHT = 100000;
+            distance4mLEFT = 100000;
             explored = false;
         }
 
-        public void updateDist(int distance, Node parent, int direction) {
-            this.distance = distance;
-            this.parent = parent;
-            this.direction = direction;
+        public void updateDist(int distance, int direction) {
+            switch (direction) {
+                case 0:
+                    this.distance4mDOWN = distance;
+                    break;
+                case 1:
+                    this.distance4mLEFT = distance;
+                    break;
+                case 2:
+                    this.distance4mUP = distance;
+                    break;
+                case 3:
+                    this.distance4mRIGHT = distance;
+                    break;
+            }
         }
 
         public Node up() {
@@ -194,13 +209,34 @@ public class PushCart {
         }
 
         public int cost(Node n, int direction) {
-            int c = this.distance + directionChangeCost(this.direction, direction) + hopCost(n);
-            return c;
+            int up = distance4mDOWN + directionChangeCost(0, direction);
+            int down = distance4mUP + directionChangeCost(2, direction);
+            int right = distance4mLEFT + directionChangeCost(1, direction);
+            int left = distance4mRIGHT + directionChangeCost(3, direction);
+
+            int c = up;
+            if (c > down) c = down;
+            if (c > left) c = left;
+            if (c > right) c = right;
+
+            return c + hopCost(n);
         }
 
         @Override
         public int compareTo(Node o) {
-            return Integer.compare(this.distance, o.distance);
+            return Integer.compare(this.getBestDistance(), o.getBestDistance());
+        }
+
+        public int getBestDistance() {
+            int up = distance4mDOWN;
+            int down = distance4mUP;
+            int right = distance4mLEFT;
+            int left = distance4mRIGHT;
+            int c = up;
+            if (c > down) c = down;
+            if (c > left) c = left;
+            if (c > right) c = right;
+            return c;
         }
     }
 }
